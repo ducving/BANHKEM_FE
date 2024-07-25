@@ -50,7 +50,7 @@ export default function Cart() {
             <h6 style={{ width: "50%", textAlign: 'center' }}> Chi nhánh</h6>
           </div>
           <div className="user col-2" style={{ display: 'flex' }}>
-            <a href='/cart' >
+            <a href='/' >
               <img src='https://static.vecteezy.com/system/resources/thumbnails/007/033/146/small_2x/profile-icon-login-head-icon-vector.jpg'
                 style={{ width: "100%", borderRadius: "50%" }} />
 
@@ -58,7 +58,7 @@ export default function Cart() {
             <h6 style={{ width: "50%", textAlign: 'center' }}> Tài khoản</h6>
           </div>
           <div className="cart col-2" style={{ display: 'flex' }}>
-            <a href='/test'>
+            <a href='/'>
               <img src='https://media.istockphoto.com/id/639201388/vector/shopping-cart-icon.jpg?s=612x612&w=is&k=20&c=OABCYZ7OniUdLrgJZuSgq2zuTNClyGGJPM_o5u9ZJnA='
                 style={{ width: "100%", borderRadius: "50%" }} />
             </a>
@@ -71,7 +71,7 @@ export default function Cart() {
         <div className={`menu  ${menuOpen ? 'open' : ''}`} style={{ width: "100%" }}>
           <ul style={{ display: "flex", width: "100%" }}>
             <li className='' style={{ width: "13%" }}></li>
-            <li className='home '><a href='/'> TRANG CHỦ</a></li>
+            <li className='home '><a href='/home'> TRANG CHỦ</a></li>
             <li className='Banhsn '>
               <a href="#" onClick={toggleDropdown}>
                 COOKIES & MINICAKE
@@ -110,51 +110,43 @@ export default function Cart() {
       <div className="cart-all col-12">
         <div className="cart-left col-1" ></div>
         <div className="cart-bw col-10" >
-          <div className="cart-bw1">
+          <div className="cart-bw-cart">
             <h3>GIỎ HÀNG</h3>
           </div>
           <hr />
           <hr />
-          <div className="cart-bw2 col-12">
-            <p className=" col-3"></p>
-            <p className="col-3">Thông tin chi tiết</p>
-            <p className="col-2">Đơn giá</p>
-            <p className="col-2">Số lượng</p>
-            <p className="col-2">Tổng giá</p>
-          </div>
-          <hr />
-          <div className="cart-bw3 col-12">
-            <div className="cart-bw3-image col-3">
-              <img src="https://product.hstatic.net/1000313040/product/4_16f76cea85d94a528dcd26e70e1b436f_master.png" />
-            </div>
-            <div className="cart-bw3-nameCake col-3">
-              <h4>TÊN BÁNH</h4>
-            </div>
-            <div className="cart-bw3-price col-2">
-              <h5>10000 VNĐ</h5>
-            </div>
-            <div className="cart-bw3-addcart col-2 ">
-              <div className="cart-bw3-addcart1">
-                <div className="cart-bw3-addcart2">
-                  <button type="button" className="cart-buttona" onClick={decrement}>
-                    -
-                  </button>
-                  <h5>{count}</h5>
-                  <button type="button" className="cart-buttonb" onClick={increment}>
-                    +
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="cart-bw3-tprice">
-              <h5>10000 VNĐ</h5>
-            </div>
-            <hr/>
-          </div>
-         
+          <form>
+            <table className="cart-table">
+              <tr className="row-with-border">
+                <td className="table-none col-3"></td>
+                <td className=" table-none col-3"><h3>Thông tin chi tiết</h3></td>
+                <td className=" table-none col-2"><p>Đơn giá</p></td>
+                <td className="table-none col-2"><p>Số lượng</p></td>
+                <td className="table-none col-2"><p>Tổng giá</p></td>
+              </tr>
+              <tr className="row-with-border">
+                <td className="table-none"><img src="https://product.hstatic.net/1000313040/product/post_fb_2_cc33b01b06b74113a0dee769b8ce3487_medium.png" /></td>
+                <td className="table-none"><p>Tên Bánh</p></td>
+                <td className="table-none"><p>40000 VNĐ</p></td>
+                <td className="table-none">
+                  <div className="table-none-accout">
+                    <button type="button" className="cart-buttona" onClick={decrement}>
+                      -
+                    </button>
+                    <h5>{count}</h5>
+                    <button type="button" className="cart-buttonb" onClick={increment}>
+                      +
+                    </button>
+                  </div>
+                </td>
+                <td className="table-none"><p>80000 VNĐ</p></td>
+              </tr>
+            </table>
+          </form>
         </div>
         <div className="cart-right col-1"></div>
       </div>
+      <Footer/>
     </>
   )
 }

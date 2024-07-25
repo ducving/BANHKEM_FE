@@ -5,12 +5,19 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import "../Reponsive/Reponsive.css";
+import { useFormik } from 'formik';
 
 export default function Home() {
+    const username = sessionStorage.getItem('username');
+    const password = sessionStorage.getItem('password');
+    const role = sessionStorage.getItem('role');
+    const id_user = sessionStorage.getItem('user_id');
     const [menuOpen, setMenuOpen] = useState(false);
     const [cake, setCake] = useState([]);
     const [itemsPage, setItemsPage] = useState(12);
     const [image, setImage] = useState([]);
+    console.log(id_user)
+    
 
     const navigate = useNavigate();
     //thêm banh
@@ -56,15 +63,32 @@ export default function Home() {
         const response =
             await axios.get(`http://localhost:8080/api/cake?name=${name}&typeIdCake=${typeIdCake}`);
         setCake(response.data);
+        
 
     }
-
+    function formatPrice(price) {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      }
     useEffect(() => {
         getList()
     }, [name, typeIdCake]);
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
+
+
+
+
+    // const formAdd=useFormik({
+    //     initialValues: {
+    //         quantity:"",
+    //         id_user:"",
+    //         id_cake:""
+    //     },
+    // })
+
+
+
 
     const renderPagination = () => {
         const pageNumbers = [];
@@ -140,7 +164,7 @@ export default function Home() {
                         <h6 style={{ width: "50%", textAlign: 'center' }}> Chi nhánh</h6>
                     </div>
                     <div className="user col-2" style={{ display: 'flex' }}>
-                        <a href='/cart' >
+                        <a href='/' >
                             <img src='https://static.vecteezy.com/system/resources/thumbnails/007/033/146/small_2x/profile-icon-login-head-icon-vector.jpg'
                                 style={{ width: "100%", borderRadius: "50%" }} />
 
@@ -148,7 +172,7 @@ export default function Home() {
                         <h6 style={{ width: "50%", textAlign: 'center' }}> Tài khoản</h6>
                     </div>
                     <div className="cart col-2" style={{ display: 'flex' }}>
-                        <a href='/test'>
+                        <a href='/cart'>
                             <img src='https://media.istockphoto.com/id/639201388/vector/shopping-cart-icon.jpg?s=612x612&w=is&k=20&c=OABCYZ7OniUdLrgJZuSgq2zuTNClyGGJPM_o5u9ZJnA='
                                 style={{ width: "100%", borderRadius: "50%" }} />
                         </a>
@@ -161,7 +185,9 @@ export default function Home() {
                 <div className={`menu  ${menuOpen ? 'open' : ''}`} style={{ width: "100%" }}>
                     <ul style={{ display: "flex", width: "100%" }}>
                         <li className='' style={{ width: "13%" }}></li>
-                        <li className='home '><a href='/'> TRANG CHỦ</a></li>
+                        <li className='home '>
+                            <a href='/home'> TRANG CHỦ</a>
+                            </li>
                         <li className='Banhsn '>
                             <a href="#" onClick={toggleDropdown}>
                                 COOKIES & MINICAKE
@@ -242,10 +268,14 @@ export default function Home() {
                                 </div>
                                 <div className='price'>
                                     <div className='price1'>
-                                        <p>{item.price} VNĐ</p>
+                                        <p>{formatPrice(item.price)}  VNĐ</p>
                                     </div>
                                     <div className='price2'>
-                                        <FontAwesomeIcon icon={faCartShopping} />
+                                        <form>
+                                            
+                                            <FontAwesomeIcon icon={faCartShopping} />
+                                        </form>
+                                        
                                     </div>
                                 </div>
                             </div>

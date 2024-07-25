@@ -28,56 +28,45 @@
   display: flex;
   background-color: rgb(245, 234, 220);
 }
-.cart-bw{
+
+.cart-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+
+.table-none {
+  padding: 2%;
+  
+}.row-with-border {
+  border-bottom: 1px solid #afa8a8; /* Sử dụng màu xám nhạt hơn */
+  padding-bottom: 10px;
+}
+.cart-bw-cart{
   margin-top: 5%;
 }
-
-.cart-bw2 {
-  margin-top: 2%;
-  display: flex;
-  padding: 2% 2% 1% 1%;
-}
-
-.cart-bw3 {
-  display: flex;
-}
-
-.cart-bw3-image img {
-  width: 80%;
-}
-.cart-bw3-nameCake, .cart-bw3-price, .cart-bw3-addcart, .cart-bw3-tprice{
+.table-none-accout{
   display: flex;
   align-items: center;
 }
-
-.cart-bw3-addcart1 {
-  display: flex;
-  flex-direction: column;
+.table-none-accout h5{
+  padding: 10%;
 }
-
-.cart-bw3-addcart2 {
-  display: flex;
-  align-items: center;
-}
-
-.cart-bw3-addcart2 h5 {
-  margin-left: 6%;
-}
-
-.cart-buttona {
+.cart-buttona{
   border: none;
-  padding: 5px 10px;
   border-radius: 4px;
   cursor: pointer;
-  background-color: rgb(227, 33, 62);
+  font-size: 40px;
+  background-color:rgb(245, 234, 220) ;
+  margin-top: -10%;
+}
+.cart-buttonb{
+  border: none;
+  cursor: pointer;
+  font-size: 30px;
+  background-color:rgb(245, 234, 220) ;
+  margin-top: -9%;
+
 }
 
-.cart-buttonb {
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-right: 20px;
-  background-color: rgb(14, 210, 34);
-  margin-left: 6%;
-}
+
