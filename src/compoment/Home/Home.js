@@ -9,15 +9,14 @@ import { useFormik } from 'formik';
 
 export default function Home() {
     const username = sessionStorage.getItem('username');
-    const password = sessionStorage.getItem('password');
     const role = sessionStorage.getItem('role');
     const id_user = sessionStorage.getItem('user_id');
     const [menuOpen, setMenuOpen] = useState(false);
     const [cake, setCake] = useState([]);
     const [itemsPage, setItemsPage] = useState(12);
     const [image, setImage] = useState([]);
-    console.log(id_user)
-    
+    const [selectedCakeId, setSelectedCakeId] = useState('');
+
 
     const navigate = useNavigate();
     //thêm banh
@@ -59,16 +58,17 @@ export default function Home() {
     const currentPageData = getCurrentPageData();
 
 
+
     async function getList() {
         const response =
             await axios.get(`http://localhost:8080/api/cake?name=${name}&typeIdCake=${typeIdCake}`);
         setCake(response.data);
-        
+
 
     }
     function formatPrice(price) {
         return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      }
+    }
     useEffect(() => {
         getList()
     }, [name, typeIdCake]);
@@ -79,15 +79,34 @@ export default function Home() {
 
 
 
-    // const formAdd=useFormik({
-    //     initialValues: {
-    //         quantity:"",
-    //         id_user:"",
-    //         id_cake:""
-    //     },
-    // })
 
+    const formAdd = useFormik({
+        initialValues: {
+            quantity: "",
+            id_user: "",
+            id_cake: ""
+        },
+        onSubmit: async (values) => {
+            const formData = new FormData();
+            formData.append("quantity", 0);
+            formData.append("id_user", id_user);
+            formData.append("id_cake", selectedCakeId);
 
+            await axios.post("http://localhost:8080/api/cart", formData)
+                .then(() => {
+                    navigate("/home");
+                })
+                .catch(error => {
+                    console.error("There was an error!", error);
+                });
+        }
+    });
+    const handleSubmit = (event, id) => {
+        event.preventDefault();
+        setSelectedCakeId(id);
+        formAdd.setFieldValue("id_cake", id); // Cập nhật giá trị id_cake trong formik
+        formAdd.handleSubmit(event);
+    };
 
 
     const renderPagination = () => {
@@ -187,7 +206,7 @@ export default function Home() {
                         <li className='' style={{ width: "13%" }}></li>
                         <li className='home '>
                             <a href='/home'> TRANG CHỦ</a>
-                            </li>
+                        </li>
                         <li className='Banhsn '>
                             <a href="#" onClick={toggleDropdown}>
                                 COOKIES & MINICAKE
@@ -271,11 +290,12 @@ export default function Home() {
                                         <p>{formatPrice(item.price)}  VNĐ</p>
                                     </div>
                                     <div className='price2'>
-                                        <form>
-                                            
-                                            <FontAwesomeIcon icon={faCartShopping} />
+                                        <form onSubmit={(event) => handleSubmit(event, item.id)}>
+                                            <input type='hidden' name='id_cake' value={item.id} onChange={formAdd.handleChange} />
+                                            <button type='submit'>
+                                                <FontAwesomeIcon icon={faCartShopping} />
+                                            </button>
                                         </form>
-                                        
                                     </div>
                                 </div>
                             </div>

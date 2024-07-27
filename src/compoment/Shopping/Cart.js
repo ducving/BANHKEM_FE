@@ -8,23 +8,92 @@ import axios from "axios";
 
 
 export default function Cart() {
+  const id_user = sessionStorage.getItem('user_id');
+
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const [cake, setCake] = useState({ image: [] });
   const params = useParams();
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState({});
   const [typeIdCake, setTypeIdCake] = useState('');
+  const [image, setImage] = useState([]);
   const [name, setName] = useState('');
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+  const handleImageChanges = (event) => {
+    const files = Array.from(event.target.files);
+    setImage([...image, ...files]);
+  };
 
-  const increment = () => setCount(count + 1);
-  const decrement = () => setCount(count - 1);
+  const handleRemoveImage = (index) => {
+    const updatedImages = [...image];
+    updatedImages.splice(index, 1);
+    setImage(updatedImages);
+  };
+
+
   const [isOpen, setIsOpen] = useState(false);
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
+  const increment = (id) => {
+    setCount((prevCounts) => ({
+      ...prevCounts,
+      [id]: (prevCounts[id] || 0) + 1
+    }));
+  };
+  const decrement = (id) => {
+    setCount((prevCounts) => ({
+      ...prevCounts,
+      [id]: Math.max((prevCounts[id] || 0) - 1, 0)
+    }));
+  };
+
+  const [cart, setCart] = useState([]);
+  async function getList() {
+    try {
+      const rep = await axios.get(`http://localhost:8080/api/cart/${id_user}`);
+      setCart(rep.data);
+
+      // Khởi tạo số lượng của từng sản phẩm khi nhận dữ liệu từ API
+      const initialCounts = rep.data.reduce((acc, item) => {
+        const key = item.cake.id;
+        if (!acc[key]) {
+          acc[key] = item.quantity || 1; // Sử dụng số lượng từ dữ liệu giỏ hàng hoặc 1 nếu không có
+        } else {
+          acc[key] += item.quantity || 1; // Cộng dồn số lượng nếu có nhiều sản phẩm giống nhau
+        }
+        return acc;
+      }, {});
+      setCount(initialCounts);
+    } catch (error) {
+      console.error('Error fetching cart data:', error);
+    }
+  }
+  useEffect(() => {
+    if (id_user) {
+      getList();
+    } else {
+      console.error('User ID is missing');
+    }
+  }, [id_user]);
+
+  // Nhóm sản phẩm giống nhau
+  const groupedCart = cart.reduce((acc, item) => {
+    const key = item.cake.id;
+    if (!acc[key]) {
+      acc[key] = {
+        ...item,
+        quantity: count[key] || 1 // Sử dụng số lượng từ trạng thái counts hoặc 1 nếu chưa có
+      };
+    }
+    return acc;
+  }, {});
+
+  const groupedCartArray = Object.values(groupedCart);
+
+
   return (
     <>
       <div className="navbar">
@@ -124,29 +193,55 @@ export default function Cart() {
                 <td className="table-none col-2"><p>Số lượng</p></td>
                 <td className="table-none col-2"><p>Tổng giá</p></td>
               </tr>
-              <tr className="row-with-border">
-                <td className="table-none"><img src="https://product.hstatic.net/1000313040/product/post_fb_2_cc33b01b06b74113a0dee769b8ce3487_medium.png" /></td>
-                <td className="table-none"><p>Tên Bánh</p></td>
-                <td className="table-none"><p>40000 VNĐ</p></td>
-                <td className="table-none">
-                  <div className="table-none-accout">
-                    <button type="button" className="cart-buttona" onClick={decrement}>
-                      -
-                    </button>
-                    <h5>{count}</h5>
-                    <button type="button" className="cart-buttonb" onClick={increment}>
-                      +
-                    </button>
-                  </div>
-                </td>
-                <td className="table-none"><p>80000 VNĐ</p></td>
-              </tr>
+              {groupedCartArray.map(item => (
+                <tr className="row-with-border">
+                  <td className="table-none1">
+                    <img src={process.env.PUBLIC_URL + '/img/' + (item.cake.image[0]?.name || '')} />
+                  </td>
+                  <td className="table-none"><p>{item.cake.name}</p></td>
+                  <td className="table-none"><p>{item.cake.price} VNĐ</p></td>
+                  <td className="table-none">
+                    <div className="table-none-accout">
+                      <button type="button" className="cart-buttona" onClick={() => decrement(item.id)}>
+                        -
+                      </button>
+                      <h5>{count[item.cake.id] || 1}</h5>
+                      <button type="button" className="cart-buttonb" onClick={() => increment(item.id)}>
+                        +
+                      </button>
+                    </div>
+                  </td>
+                  <td className="table-none"><p>{(count[item.id] || 0) * item.cake.price} VNĐ</p></td>
+                </tr>
+              ))}
             </table>
           </form>
+          <div className="cart-bw-da col-12">
+            <div className="cart-bw-d col-8">
+              <p>Quý khách xin vui lòng nhập thông tin: Họ tên, Ngày tháng năm sinh, Địa chỉ nhận, Thời gian nhận bánh và Số điện thoại liên hệ.</p>
+              <input type="text" />
+            </div>
+            <div className="cart-bw-a ">
+              <h5>Tổng tiền : 1.200.000 VNĐ</h5><br></br>
+              <p style={{float:"right",width:"100%"}}>Vận chuyển</p>
+              <div style={{ display: "flex",width:"100%" }}>
+                <button type="button" className="cart_addcart">Cập nhật</button>
+                <button type="button" className="cart_buycart">Thanh toán</button>
+              </div>
+
+            </div>
+            <div>
+
+            </div>
+
+          </div>
+
+
         </div>
+
         <div className="cart-right col-1"></div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   )
 }

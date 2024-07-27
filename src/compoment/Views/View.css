@@ -156,8 +156,7 @@ view-betew212{
   margin-left: 1%;
 }
 
-.addcart,
-.buycart {
+.addcart, .buycart {
   display: inline-block;
   padding: 12px 24px;
   font-size: 12px;
