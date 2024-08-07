@@ -3,67 +3,13 @@ import { faCartShopping, faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import "../Login/Login.css"
+import "../Register/Register.css"
 import axios from "axios";
+import { useFormik } from 'formik';
+import Swal from 'sweetalert2';
+export default function Register() {
 
-export default function Login() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const id_user = sessionStorage.getItem('user_id');
-    const [totalQuantity, setTotalQuantity] = useState(0);
-    const [cartCakeIds, setCartCakeIds] = useState([]); // Track cake IDs in the cart
-
-
-    const [isLoggedIn, setIsLoggedIn] = useState(!!sessionStorage.getItem('username'));
-    const navigate = useNavigate();
-    useEffect(() => {
-        async function fetchCart() {
-            try {
-                const response = await axios.get(`http://localhost:8080/api/cart/${id_user}`);
-                const cartItems = response.data;
-                const uniqueItemsCount = cartItems.length; // Count the number of unique cake items
-                setTotalQuantity(uniqueItemsCount);
-                setCartCakeIds(cartItems.map(item => item.id_cake)); // Store the cake IDs in the cart
-            } catch (error) {
-                console.error('Error fetching cart data:', error);
-            }
-        }
-
-        if (id_user) {
-            fetchCart();
-        }
-    }, [id_user]);
-
-    async function login(e) {
-        e.preventDefault();
-        try {
-            const rep = await axios.post("http://localhost:8080/api/cake/login", {
-                username: username,
-                password: password
-            });
-            sessionStorage.setItem('username', username);
-            sessionStorage.setItem('password', password);
-            sessionStorage.setItem('user_id', rep.data.id);
-            sessionStorage.setItem('role', rep.data.role);
-            setIsLoggedIn(true);
-            if (rep.data.role === 'user') {
-                navigate('/home');
-            } else {
-                navigate('/home');
-            }
-        } catch (error) {
-            console.error('Login failed', error);
-            // Handle login error (e.g., display an error message)
-        }
-    }
-
-    function logout() {
-        sessionStorage.clear();
-        setIsLoggedIn(false);
-        setTotalQuantity(0);  // Reset cart quantity to zero
-        navigate('/');
-    }
-
+    const navigate= useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
@@ -74,10 +20,50 @@ export default function Login() {
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
     };
+    const formAdd =useFormik({
+        initialValues:{
+            name:"",
+            email:"",
+            username:'',
+            role:"user",
+            password:''
+        },
+        onSubmit: async(values)=>{
+            console.log(values)
+            const formData=new FormData();
+            formData.append("name",values.name);
+            formData.append("email",values.email);
+            formData.append("role",values.role);
+            formData.append("username",values.username);
+            formData.append("password",values.password);
+
+            await axios.post("http://localhost:8080/api/cake/register",formData)
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top",
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            Toast.fire({
+                icon: "success",
+                title: "Thêm thành công"
+            }).then(() => {
+                navigate("/")
+                // Navigate to home page after successful submission
+            })
+        } 
+    })
+
+    
 
     return (
         <>
-            <div className="navbar" style={{ position: "fixed" }}>
+            <div className="navbar" style={{position:"fixed"}}>
                 <div className="menu1 col-12" style={{ display: "flex" }}>
                     <div className="logo col-2">
                         <img src="https://theme.hstatic.net/1000313040/1000406925/14/logo.png?v=2115" />
@@ -103,6 +89,7 @@ export default function Login() {
                         <a href='/' >
                             <img src='https://static.vecteezy.com/system/resources/thumbnails/007/033/146/small_2x/profile-icon-login-head-icon-vector.jpg'
                                 style={{ width: "100%", borderRadius: "50%" }} />
+
                         </a>
                         <h6 style={{ width: "50%", textAlign: 'center' }}> Tài khoản</h6>
                     </div>
@@ -111,9 +98,9 @@ export default function Login() {
                             <img src='https://media.istockphoto.com/id/639201388/vector/shopping-cart-icon.jpg?s=612x612&w=is&k=20&c=OABCYZ7OniUdLrgJZuSgq2zuTNClyGGJPM_o5u9ZJnA='
                                 style={{ width: "100%", borderRadius: "50%" }} />
                         </a>
-                        <h6 style={{ width: "20%", textAlign: 'center' }}>{totalQuantity}</h6>
+                        <h6 style={{ width: "20%", textAlign: 'center' }}>0</h6>
                     </div>
-                    <div className="menu-icon" >
+                    <div className="menu-icon" onClick={toggleMenu}>
                         <FontAwesomeIcon icon={faBars} />
                     </div>
                 </div>
@@ -154,43 +141,40 @@ export default function Login() {
                     </ul>
                 </div>
             </div>
-            <div className="login-sidebar">
-                <h2>TÀI KHOẢN</h2>
+            <div className="reginter-sidebar">
+                <h2>ĐĂNG KÍ</h2>
             </div>
-            <div className="login-all col-12">
-                <div className="login-left col-1"></div>
-                <div className="login-bw col-10">
-                    <div className="login-bw1 ">
-                        <p>ĐĂNG NHẬP</p>
+            <div className="reginter-all col-12">
+                <div className="reginter-left col-1"></div>
+                <div className="reginter-bw col-10">
+                    <div className="reginter-bw1 ">
+                        <p>TẠO TÀI KHOẢN</p>
                         <hr />
                     </div>
                     <div>
-                        {isLoggedIn ? (
-                            <div className="account-info">
-                                <p>Xin chào, {sessionStorage.getItem('username')}</p>
-                                <button className="btn btn-primary" onClick={logout}>Đăng xuất</button><br /><br />
-                                {sessionStorage.getItem('role') === 'admin' && (
-                                    <a href="/product-list">Danh sách sản phẩm</a>
-                                )}
+                        <form className="reginter-form" onSubmit={formAdd.handleSubmit}>
+                            <div className="reginter-form-group1">
+                                <input type="text" className="form-control" name="name" placeholder="Tên" onChange={formAdd.handleChange} />
                             </div>
-                        ) : (
-                            <form className="login-form" onSubmit={login}>
-                                <div className="form-group">
-                                    <input type="text" className="form-control1" placeholder="Tài khoản" onChange={(e) => setUsername(e.target.value)} />
-                                </div>
-                                <div className="form-group1">
-                                    <input type="password" className="form-control" placeholder="Mật khẩu" onChange={(e) => setPassword(e.target.value)} />
-                                </div>
-                                <div className="from-button">
-                                    <button type="submit" className="btn btn-primary">Đăng nhập</button>
-                                </div>
-                                <div className="form_group2">
-                                    <a href="/home">Trở về</a><br /><br />
-                                    <a href="/register">Đăng kí</a><br /><br />
-                                    <a href="/home">Quên mật khẩu?</a>
-                                </div>
-                            </form>
-                        )}
+
+                            <div className="reginter-form-group1">
+                                <input type="email" className="form-control" name="email" placeholder="email" onChange={formAdd.handleChange}/>
+                            </div>
+
+                            <div className="reginter-form-group1">
+                                <input type=" text" className="form-control" name="username" placeholder="Tài khoản" onChange={formAdd.handleChange}/>
+                            </div>
+                            <div className="reginter-form-group1">
+                                <input type="password" className="form-control" name="password" placeholder="Mật khẩu"onChange={formAdd.handleChange} />
+                            </div>
+
+                            <div className="reginter-from-button">
+                                <button type="submit" className="btn btn-primary">Đăng kí</button>
+                            </div>
+                            <div className="reginter-form_group2">
+                                <a href="/">Trở về</a>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <div className="login-right col-1"></div>
@@ -198,6 +182,7 @@ export default function Login() {
             <div className="login-footer">
                 <Footer />
             </div>
+
         </>
-    );
+    )
 }

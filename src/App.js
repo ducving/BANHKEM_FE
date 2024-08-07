@@ -5,6 +5,7 @@ import View from "./compoment/Views/View";
 import Cart from "./compoment/Shopping/Cart";
 import Test from "./compoment/Create/test";
 import Login from "./compoment/Login/Login";
+import Register from "./compoment/Register/Register";
 function App() {
     return (
         <>
@@ -14,6 +15,7 @@ function App() {
                 <Route path='/cart' element={<Cart/>}></Route>
                 <Route path='/views/:id' element={<View/>}></Route>
                 <Route path='/test' element={<Test/>}></Route>
+                <Route path='/register' element={<Register/>}></Route>
 
             </Routes>
         </>

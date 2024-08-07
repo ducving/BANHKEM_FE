@@ -1,135 +1,179 @@
+import { faCartShopping, faBars } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import "../Home/Home.css";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import "../Create/test.css";
+import "../Reponsive/Reponsive.css";
+import { useFormik } from 'formik';
+import Footer from '../Footer/Footer';
 
 export default function Test() {
-  const username = sessionStorage.getItem('username');
-  const role = sessionStorage.getItem('role');
-  const id_user = sessionStorage.getItem('user_id');
-  const [menuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate();
-  const [cake, setCake] = useState([]);
-  const [counts, setCounts] = useState({});
-  const [typeIdCake, setTypeIdCake] = useState('');
-  const [image, setImage] = useState([]);
-  const [name, setName] = useState('');
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
-  const handleImageChanges = (event) => {
-    const files = Array.from(event.target.files);
-    setImage([...image, ...files]);
-  };
+    const username = sessionStorage.getItem('username');
+    const role = sessionStorage.getItem('role');
+    const id_user = sessionStorage.getItem('user_id');
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [cake, setCake] = useState([]);
+    const [itemsPage, setItemsPage] = useState(8);
+    const [image, setImage] = useState([]);
+    const [selectedCakeId, setSelectedCakeId] = useState('');
+    const [totalQuantity, setTotalQuantity] = useState(0);
+    const [visibleCount, setVisibleCount] = useState(8); 
+    const [cartCakeIds, setCartCakeIds] = useState([]); // Track cake IDs in the cart
 
-  const handleRemoveImage = (index) => {
-    const updatedImages = [...image];
-    updatedImages.splice(index, 1);
-    setImage(updatedImages);
-  };
+    const navigate = useNavigate();
 
-  const increment = (id) => {
-    setCounts((prevCounts) => ({
-      ...prevCounts,
-      [id]: (prevCounts[id] || 1) + 1
-    }));
-  };
+    const [name, setName] = useState('');
+    const [typeIdCake, setTypeIdCake] = useState('');
 
-  const decrement = (id) => {
-    setCounts((prevCounts) => ({
-      ...prevCounts,
-      [id]: Math.max((prevCounts[id] || 1) - 1, 1) // Đảm bảo số lượng không giảm dưới 1
-    }));
-  };
+    const totalPages = Math.ceil(cake.length / itemsPage);
 
-  const [isOpen, setIsOpen] = useState(false);
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
+    async function getList() {
+        const response = await axios.get(`http://localhost:8080/api/cake?name=${name}&typeIdCake=${typeIdCake}`);
+        setCake(response.data);
+    }
 
-  const [cart, setCart] = useState([]);
+    function formatPrice(price) {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
 
-  async function getList() {
-    try {
-      const rep = await axios.get(`http://localhost:8080/api/cart/${id_user}`);
-      setCart(rep.data);
+    useEffect(() => {
+        getList();
+    }, [name, typeIdCake]);
 
-      // Khởi tạo số lượng của từng sản phẩm khi nhận dữ liệu từ API
-      const initialCounts = rep.data.reduce((acc, item) => {
-        const key = item.cake.id;
-        if (!acc[key]) {
-          acc[key] = item.quantity || 1; // Sử dụng số lượng từ dữ liệu giỏ hàng hoặc 1 nếu không có
-        } else {
-          acc[key] += item.quantity || 1; // Cộng dồn số lượng nếu có nhiều sản phẩm giống nhau
+    useEffect(() => {
+        async function fetchCart() {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/cart/${id_user}`);
+                const cartItems = response.data;
+                const uniqueItemsCount = cartItems.length; // Count the number of unique cake items
+                setTotalQuantity(uniqueItemsCount);
+                setCartCakeIds(cartItems.map(item => item.id_cake)); // Store the cake IDs in the cart
+            } catch (error) {
+                console.error('Error fetching cart data:', error);
+            }
         }
-        return acc;
-      }, {});
-      setCounts(initialCounts);
-    } catch (error) {
-      console.error('Error fetching cart data:', error);
-    }
-  }
 
-  useEffect(() => {
-    if (id_user) {
-      getList();
-    } else {
-      console.error('User ID is missing');
-    }
-  }, [id_user]);
+        if (id_user) {
+            fetchCart();
+        }
+    }, [id_user]);
 
-  // Nhóm sản phẩm giống nhau
-  const groupedCart = cart.reduce((acc, item) => {
-    const key = item.cake.id;
-    if (!acc[key]) {
-      acc[key] = {
-        ...item,
-        quantity: counts[key] || 1 // Sử dụng số lượng từ trạng thái counts hoặc 1 nếu chưa có
-      };
-    }
-    return acc;
-  }, {});
+    const formAdd = useFormik({
+        initialValues: {
+            quantity: "",
+            id_user: "",
+            id_cake: ""
+        },
+        onSubmit: async () => {
+            const formData = new FormData();
+            formData.append("quantity", 1);
+            formData.append("id_user", id_user);
+            formData.append("id_cake", selectedCakeId);
 
-  const groupedCartArray = Object.values(groupedCart);
+            await axios.post("http://localhost:8080/api/cart", formData)
+                .then(() => {
+                    if (!cartCakeIds.includes(selectedCakeId)) {
+                        setTotalQuantity(prevQuantity => prevQuantity + 1);
+                        setCartCakeIds([...cartCakeIds, selectedCakeId]); // Add the new cake ID to the cart
+                    }
+                    navigate("/test");
+                })
+                .catch(error => {
+                    console.error("There was an error!", error);
+                });
+        }
+    });
 
-  return (
-    <>
-      <form>
-        <table className="cart-table">
-          <thead>
-            <tr className="row-with-border">
-              <th className="table-none col-3"></th>
-              <th className="table-none col-3"><h3>Thông tin chi tiết</h3></th>
-              <th className="table-none col-2"><p>Đơn giá</p></th>
-              <th className="table-none col-2"><p>Số lượng</p></th>
-              <th className="table-none col-2"><p>Tổng giá</p></th>
-            </tr>
-          </thead>
-          <tbody>
-            {groupedCartArray.map((item) => (
-              <tr className="row-with-border" key={item.cake.id}>
-                <td className="table-none1">
-                {/* <img src={process.env.PUBLIC_URL + '/img/' + (item.cake.image[0]?.name || '')} /> */}
-                </td>
-                <td className="table-none"><p>{item.cake.name}</p></td>
-                <td className="table-none"><p>{item.cake.price} VNĐ</p></td>
-                <td className="table-none">
-                  <div className="table-none-accout">
-                    <button type="button" className="cart-buttona" onClick={() => decrement(item.cake.id)}>
-                      -
-                    </button>
-                    <h5>{counts[item.cake.id] || 1}</h5>
-                    <button type="button" className="cart-buttonb" onClick={() => increment(item.cake.id)}>
-                      +
-                    </button>
-                  </div>
-                </td>
-                <td className="table-none"><p>{(counts[item.cake.id] || 1) * item.cake.price} VNĐ</p></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </form>
-    </>
-  );
+    const handleSubmit = (event, id) => {
+        event.preventDefault();
+        setSelectedCakeId(id);
+        formAdd.setFieldValue("id_cake", id);
+        formAdd.handleSubmit(event);
+    };
+
+    const toggleMenu = () => {
+        setMenuOpen(!menuOpen);
+    };
+
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleDropdown = () => {
+        setIsOpen(!isOpen);
+    };
+
+    const groupedCakes = cake.reduce((groups, item) => {
+        const group = groups[item.typeOfCake.name] || [];
+        group.push(item);
+        groups[item.typeOfCake.name] = group;
+        return groups;
+    }, {});
+
+    return (
+        <>
+            <div className="navbar" style={{position:"fixed"}}>
+                <div className="menu1 col-12" style={{ display: "flex" }}>
+                    <div className="cart col-2" style={{ display: 'flex' }}>
+                        <a href='/cart'>
+                            <img src='https://media.istockphoto.com/id/639201388/vector/shopping-cart-icon.jpg?s=612x612&w=is&k=20&c=OABCYZ7OniUdLrgJZuSgq2zuTNClyGGJPM_o5u9ZJnA='
+                                style={{ width: "100%", borderRadius: "50%" }} />
+                        </a>
+                        <h6 style={{ width: "20%", textAlign: 'center' }}>{totalQuantity}</h6>
+                    </div>
+                    <div className="menu-icon" onClick={toggleMenu}>
+                        <FontAwesomeIcon icon={faBars} />
+                    </div>
+                </div>
+            </div>
+            <div className='all col-12' style={{ display: "flex" }} >
+                <div className='left col-2'></div>
+                <div className='between col-8'>
+                    {Object.keys(groupedCakes).map(typeOfCake => (
+                        <div key={typeOfCake}>
+                            <div className='between1'>
+                                <h3 className="birthdayCake-title">{typeOfCake} </h3>
+                                <img src='https://theme.hstatic.net/1000313040/1000406925/14/home_line_collection1.png?v=2115' />
+                            </div>
+                            <div className='between2'>
+                                {groupedCakes[typeOfCake].slice(0, visibleCount).map(item => (
+                                    <div className='a col-3' key={item.id}>
+                                        <a href={`/views/${item.id}`}>
+                                            <div className='image' >
+                                                <img src={process.env.PUBLIC_URL + '/img/' + (item.image[0]?.name || '')} />
+                                            </div>
+                                        </a>
+                                        <div className='nameCake'>
+                                            <h3>{item.name}</h3>
+                                            <h6>{item.code}</h6>
+                                        </div>
+                                        <div className='price'>
+                                            <div className='price1'>
+                                                <p>{formatPrice(item.price)}  VNĐ</p>
+                                            </div>
+                                            <div className='price2'>
+                                                <form onSubmit={(event) => handleSubmit(event, item.id)}>
+                                                    <input type='hidden' name='id_cake' value={item.id} onChange={formAdd.handleChange} />
+                                                    <button type='submit' className='btas'>
+                                                        <FontAwesomeIcon icon={faCartShopping} />
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <button className='showAll_cakeid' >
+                                <a href='#'>xem thêm</a>
+                            </button>
+                        </div>
+                    ))}
+                </div>
+                <div className='right col-2'></div>
+            </div>
+            <Footer />
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        </>
+    );
 }
