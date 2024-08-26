@@ -6,7 +6,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useFormik } from 'formik';
-import debounce from 'lodash.debounce';
+import "../Reponsive/CartRPS.css"
+
 
 
 export default function Cart() {
@@ -305,9 +306,9 @@ export default function Cart() {
                     <td className="table-none"><p>{formatPrice(item.cake.price)} VNĐ</p></td>
                     <td className="table-none">
                       <div className="table-none-accout">
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div className="cart_bt" style={{ display: 'flex', alignItems: 'center' }}>
                           <button type="button" onClick={() => handleDecrement(item.cake.id)} className="cart-buttona">-</button>
-                          <span className="cart_span" style={{ width: '50px', textAlign: 'center' }}>{counts[item.cake.id] || 1}</span>
+                          <span className="cart_span" >{counts[item.cake.id] || 1}</span>
                           <button type="button" onClick={() => handleIncrement(item.cake.id)} className="cart-buttonb">+</button>
                           <input
                             type="hidden"

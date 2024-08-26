@@ -183,3 +183,11 @@
   font-size: 50px;
   margin-bottom: 10%;
 }
+th, td {
+  text-align: center;
+  vertical-align: middle; /* Vertically center content */
+}
+.cart_span{
+  width: 50px;
+  text-align: center;
+}

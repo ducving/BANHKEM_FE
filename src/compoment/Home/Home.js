@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import "../Reponsive/Reponsive.css";
 import { useFormik } from 'formik';
 import Footer from '../Footer/Footer';
+import "../Reponsive/HomeReponsive.css";
 
 export default function Home() {
     const username = sessionStorage.getItem('username');
@@ -36,10 +37,6 @@ export default function Home() {
     const totalPages = Math.ceil(cake.length / itemsPage);
 
 
-
-    
-
-
     async function getList() {
         const response =
             await axios.get(`http://localhost:8080/api/cake?name=${name}&typeIdCake=${typeIdCake}`);
@@ -54,9 +51,7 @@ export default function Home() {
         getList()
     }, [name, typeIdCake]);
     
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
+
 
     useEffect(() => {
         async function fetchCart() {
@@ -263,7 +258,7 @@ export default function Home() {
                                                 <form onSubmit={(event) => handleSubmit(event, item.id)}>
                                                     <input type='hidden' name='id_cake' value={item.id} onChange={formAdd.handleChange} />
                                                     <button type='submit' className='btas'>
-                                                        <FontAwesomeIcon icon={faCartShopping} />
+                                                        <FontAwesomeIcon  className="small-icon" icon={faCartShopping} />
                                                     </button>
                                                 </form>
                                             </div>

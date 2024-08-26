@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../Login/Login.css"
+import "../Reponsive/LoginRPS.css"
+
 import axios from "axios";
 
 export default function Login() {
@@ -63,6 +65,7 @@ export default function Login() {
         setTotalQuantity(0);  // Reset cart quantity to zero
         navigate('/');
     }
+
 
     const [menuOpen, setMenuOpen] = useState(false);
     const toggleMenu = () => {
@@ -168,9 +171,10 @@ export default function Login() {
                         {isLoggedIn ? (
                             <div className="account-info">
                                 <p>Xin chào, {sessionStorage.getItem('username')}</p>
-                                <button className="btn btn-primary" onClick={logout}>Đăng xuất</button><br /><br />
+                                <button className="loguot_btn btn-primary" onClick={logout}>Đăng xuất</button><br /><br />
+                                <a href="/user">Lịch sử đặt bánh</a>
                                 {sessionStorage.getItem('role') === 'admin' && (
-                                    <a href="/product-list">Danh sách sản phẩm</a>
+                                    <a href="/admin">Danh sách sản phẩm</a>
                                 )}
                             </div>
                         ) : (
@@ -182,7 +186,7 @@ export default function Login() {
                                     <input type="password" className="form-control" placeholder="Mật khẩu" onChange={(e) => setPassword(e.target.value)} />
                                 </div>
                                 <div className="from-button">
-                                    <button type="submit" className="btn btn-primary">Đăng nhập</button>
+                                    <button type="submit" className="loh_btn btn-primary">Đăng nhập</button>
                                 </div>
                                 <div className="form_group2">
                                     <a href="/home">Trở về</a><br /><br />

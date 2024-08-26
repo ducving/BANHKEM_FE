@@ -1,5 +1,7 @@
 
 import "../Footer/Footer.css"
+import "../Reponsive/FooterReponsive.css"
+
 export default function Footer() {
     return (
         <>
@@ -40,8 +42,7 @@ export default function Footer() {
 
         </div>
         <div className='fc col-2'>
-          <h5>MỖI THÁNG CHÚNG TÔI ĐỀU CÓ NHỮNG ĐỢT GIẢM GIÁ DỊCH VỤ VÀ SẢN PHẨM NHẰM TRI ÂN KHÁCH HÀNG. ĐỂ CÓ THỂ CẬP NHẬT KỊP THỜI NHỮNG ĐỢT GIẢM GIÁ NÀY, VUI LÒNG NHẬP ĐỊA CHỈ EMAIL CỦA BẠN VÀO Ô DƯỚI ĐÂY
-          </h5>
+          <p>MỖI THÁNG CHÚNG TÔI ĐỀU CÓ NHỮNG ĐỢT GIẢM GIÁ DỊCH VỤ VÀ SẢN PHẨM NHẰM TRI ÂN KHÁCH HÀNG. ĐỂ CÓ THỂ CẬP NHẬT KỊP THỜI NHỮNG ĐỢT GIẢM GIÁ NÀY, VUI LÒNG NHẬP ĐỊA CHỈ EMAIL CỦA BẠN VÀO Ô DƯỚI ĐÂY </p>
           <img src='https://theme.hstatic.net/1000313040/1000406925/14/hg_img_thumb1.png?v=2121'/>
         </div>
         <div className='col-1'></div>

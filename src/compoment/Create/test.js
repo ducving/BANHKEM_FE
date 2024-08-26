@@ -1,179 +1,236 @@
-import { faCartShopping, faBars } from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faBars, faRectangleXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import "../Home/Home.css";
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import "../Reponsive/Reponsive.css";
 import { useFormik } from 'formik';
-import Footer from '../Footer/Footer';
+import "../Admin/Admin.css";
 
 export default function Test() {
-    const username = sessionStorage.getItem('username');
-    const role = sessionStorage.getItem('role');
+    const [imagePreviews, setImagePreviews] = useState([]);
+    const [order, setOrder] = useState([]);
     const id_user = sessionStorage.getItem('user_id');
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [cake, setCake] = useState([]);
-    const [itemsPage, setItemsPage] = useState(8);
-    const [image, setImage] = useState([]);
-    const [selectedCakeId, setSelectedCakeId] = useState('');
-    const [totalQuantity, setTotalQuantity] = useState(0);
-    const [visibleCount, setVisibleCount] = useState(8); 
-    const [cartCakeIds, setCartCakeIds] = useState([]); // Track cake IDs in the cart
+    const [type, setType] = useState([]);
+    const [currentCake, setCurrentCake] = useState(null); // To hold the current cake being edited
 
-    const navigate = useNavigate();
-
-    const [name, setName] = useState('');
-    const [typeIdCake, setTypeIdCake] = useState('');
-
-    const totalPages = Math.ceil(cake.length / itemsPage);
-
-    async function getList() {
-        const response = await axios.get(`http://localhost:8080/api/cake?name=${name}&typeIdCake=${typeIdCake}`);
-        setCake(response.data);
-    }
-
-    function formatPrice(price) {
-        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    // Fetch cake types when the component mounts
+    async function getType() {
+        try {
+            const rep = await axios.get('http://localhost:8080/api/cake/typeCake');
+            setType(rep.data);
+        } catch (error) {
+            console.error('Error fetching cake types:', error);
+        }
     }
 
     useEffect(() => {
-        getList();
-    }, [name, typeIdCake]);
+        getType();
+    }, []);
 
     useEffect(() => {
-        async function fetchCart() {
+        async function fetchCakes() {
             try {
-                const response = await axios.get(`http://localhost:8080/api/cart/${id_user}`);
-                const cartItems = response.data;
-                const uniqueItemsCount = cartItems.length; // Count the number of unique cake items
-                setTotalQuantity(uniqueItemsCount);
-                setCartCakeIds(cartItems.map(item => item.id_cake)); // Store the cake IDs in the cart
+                const response = await axios.get('http://localhost:8080/api/cake');
+                setOrder(response.data);
             } catch (error) {
-                console.error('Error fetching cart data:', error);
+                console.error('Error fetching cake data:', error);
             }
         }
+        fetchCakes();
+    }, []);
 
-        if (id_user) {
-            fetchCart();
-        }
-    }, [id_user]);
-
-    const formAdd = useFormik({
+    const formUpdate = useFormik({
         initialValues: {
+            id: '',
+            code: "",
+            name: "",
+            description: '',
+            price: "",
             quantity: "",
-            id_user: "",
-            id_cake: ""
+            iduser: id_user,
+            typeOfCake: ''
         },
-        onSubmit: async () => {
+        onSubmit: async (values) => {
             const formData = new FormData();
-            formData.append("quantity", 1);
-            formData.append("id_user", id_user);
-            formData.append("id_cake", selectedCakeId);
+            formData.append("id", values.id);
+            formData.append("code", values.code);
+            formData.append("name", values.name);
+            formData.append("description", values.description);
+            formData.append("price", values.price);
+            formData.append("quantity", values.quantity);
+            formData.append("id_user", values.iduser);
+            formData.append("typeOfCake", values.typeOfCake);
 
-            await axios.post("http://localhost:8080/api/cart", formData)
-                .then(() => {
-                    if (!cartCakeIds.includes(selectedCakeId)) {
-                        setTotalQuantity(prevQuantity => prevQuantity + 1);
-                        setCartCakeIds([...cartCakeIds, selectedCakeId]); // Add the new cake ID to the cart
-                    }
-                    navigate("/test");
-                })
-                .catch(error => {
-                    console.error("There was an error!", error);
+            for (let i = 0; i < imagePreviews.length; i++) {
+                formData.append("image", imagePreviews[i]);
+            }
+
+            try {
+                await axios.put(`http://localhost:8080/api/cake/${values.id}`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
                 });
+                window.location.href = '/admin';
+            } catch (error) {
+                console.error('Error updating cake:', error);
+            }
         }
     });
 
-    const handleSubmit = (event, id) => {
-        event.preventDefault();
-        setSelectedCakeId(id);
-        formAdd.setFieldValue("id_cake", id);
-        formAdd.handleSubmit(event);
+    const handleImageChanges = (event) => {
+        const files = Array.from(event.target.files);
+        setImagePreviews([...imagePreviews, ...files]);
     };
 
-    const toggleMenu = () => {
-        setMenuOpen(!menuOpen);
+    const handleRemoveImage = (index) => {
+        const updatedImages = [...imagePreviews];
+        updatedImages.splice(index, 1);
+        setImagePreviews(updatedImages);
     };
 
-    const [isOpen, setIsOpen] = useState(false);
-
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
+    const handleEditClick = (cake) => {
+        setCurrentCake(cake);
+        formUpdate.setValues({
+            id: cake.id,
+            code: cake.code,
+            name: cake.name,
+            description: cake.description,
+            price: cake.price,
+            quantity: cake.quantity,
+            iduser: id_user,
+            typeOfCake: cake.typeOfCake?.id || '',
+        });
+        setImagePreviews([]); // Reset image previews when editing a new cake
     };
-
-    const groupedCakes = cake.reduce((groups, item) => {
-        const group = groups[item.typeOfCake.name] || [];
-        group.push(item);
-        groups[item.typeOfCake.name] = group;
-        return groups;
-    }, {});
 
     return (
         <>
-            <div className="navbar" style={{position:"fixed"}}>
-                <div className="menu1 col-12" style={{ display: "flex" }}>
-                    <div className="cart col-2" style={{ display: 'flex' }}>
-                        <a href='/cart'>
-                            <img src='https://media.istockphoto.com/id/639201388/vector/shopping-cart-icon.jpg?s=612x612&w=is&k=20&c=OABCYZ7OniUdLrgJZuSgq2zuTNClyGGJPM_o5u9ZJnA='
-                                style={{ width: "100%", borderRadius: "50%" }} />
-                        </a>
-                        <h6 style={{ width: "20%", textAlign: 'center' }}>{totalQuantity}</h6>
-                    </div>
-                    <div className="menu-icon" onClick={toggleMenu}>
-                        <FontAwesomeIcon icon={faBars} />
-                    </div>
-                </div>
-            </div>
-            <div className='all col-12' style={{ display: "flex" }} >
-                <div className='left col-2'></div>
-                <div className='between col-8'>
-                    {Object.keys(groupedCakes).map(typeOfCake => (
-                        <div key={typeOfCake}>
-                            <div className='between1'>
-                                <h3 className="birthdayCake-title">{typeOfCake} </h3>
-                                <img src='https://theme.hstatic.net/1000313040/1000406925/14/home_line_collection1.png?v=2115' />
-                            </div>
-                            <div className='between2'>
-                                {groupedCakes[typeOfCake].slice(0, visibleCount).map(item => (
-                                    <div className='a col-3' key={item.id}>
-                                        <a href={`/views/${item.id}`}>
-                                            <div className='image' >
-                                                <img src={process.env.PUBLIC_URL + '/img/' + (item.image[0]?.name || '')} />
-                                            </div>
-                                        </a>
-                                        <div className='nameCake'>
-                                            <h3>{item.name}</h3>
-                                            <h6>{item.code}</h6>
-                                        </div>
-                                        <div className='price'>
-                                            <div className='price1'>
-                                                <p>{formatPrice(item.price)}  VNĐ</p>
-                                            </div>
-                                            <div className='price2'>
-                                                <form onSubmit={(event) => handleSubmit(event, item.id)}>
-                                                    <input type='hidden' name='id_cake' value={item.id} onChange={formAdd.handleChange} />
-                                                    <button type='submit' className='btas'>
-                                                        <FontAwesomeIcon icon={faCartShopping} />
-                                                    </button>
-                                                </form>
-                                            </div>
+            <table className="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Hình ảnh</th>
+                        <th scope="col">Tên bánh </th>
+                        <th scope="col">Số lượng</th>
+                        <th scope="col">Giá</th>
+                        <th scope="col">Chức năng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {order.map((cake, index) => (
+                        <tr key={index}>
+                            <th scope="row">{index + 1}</th>
+                            <td className='td_img'>
+                                <img className='admin_img' src={process.env.PUBLIC_URL + '/img/' + (cake.image[0]?.name || '')} alt={cake.name} />
+                            </td>
+                            <td>{cake.name}</td>
+                            <td>{cake.quantity}</td>
+                            <td>{cake.price} VNĐ</td>
+                            <td>
+                                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onClick={() => handleEditClick(cake)}>
+                                    Sửa
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            <div className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="staticBackdropLabel">Sửa sản phẩm</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form onSubmit={formUpdate.handleSubmit}>
+                            <div className="modal-body">
+                                <div className='admin_add'>
+                                    <div className='add_name'>
+                                        <label htmlFor="inputName" className="form-label">Tên bánh:</label>
+                                        <input type="text" className="form-control" name="name" id="name" value={formUpdate.values.name} onChange={formUpdate.handleChange} />
+                                    </div>
+                                    <div className='add_code'>
+                                        <label htmlFor="inputCode" className="form-label">Mã bánh:</label>
+                                        <input type="text" className="form-control" name="code" id="code" value={formUpdate.values.code} onChange={formUpdate.handleChange} />
+                                    </div>
+                                    <div className='add_price'>
+                                        <label htmlFor="inputPrice" className="form-label">Giá:</label>
+                                        <div className="input-group">
+                                            <input type="text" className="form-control" aria-label="Dollar amount (with dot and two decimal places)" name='price' value={formUpdate.values.price} onChange={formUpdate.handleChange} />
+                                            <span className="input-group-text">VNĐ</span>
                                         </div>
                                     </div>
-                                ))}
+                                    <div className='add_quantity'>
+                                        <label htmlFor="inputCode" className="form-label">Số lượng:</label>
+                                        <input type="text" className="form-control" name="quantity" id="quantity" value={formUpdate.values.quantity} onChange={formUpdate.handleChange} />
+                                    </div>
+                                    <div className='add_description'>
+                                        <div className="form-floating">
+                                            <textarea className="form-control" placeholder="Leave a comment here" name="description" id="description" value={formUpdate.values.description} onChange={formUpdate.handleChange} style={{ height: "150px" }}></textarea>
+                                            <label htmlFor="floatingTextarea2">Mô tả</label>
+                                        </div>
+                                    </div>
+                                    <div className='add_lb'>
+                                        <select
+                                            id="typeOfCake"
+                                            name="typeOfCake"
+                                            className="form-control"
+                                            value={formUpdate.values.typeOfCake}
+                                            onChange={formUpdate.handleChange}>
+                                            {type.map((item) => (
+                                                <option key={item.id} value={item.id}>
+                                                    {item.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="col-4" style={{ width: "32%", marginLeft: "1%", marginTop: "3%" }}>
+                                        <div className="col-md" style={{ marginLeft: "1%" }}>
+                                            <div className="file-upload-wrapper">
+                                                <input
+                                                    className="file-upload"
+                                                    accept="image/*"
+                                                    name="imagePreviews"
+                                                    onChange={handleImageChanges}
+                                                    type="file"
+                                                    id="formFileMultiple"
+                                                    multiple />
+                                                <label htmlFor="file-upload">Thêm ảnh</label>
+                                            </div>
+                                        </div>
+                                        {imagePreviews.length > 0 && (
+                                            <div>
+                                                <div className="row">
+                                                    {imagePreviews.map((image, index) => (
+                                                        <div key={index} className="imagePreviews">
+                                                            <div className="position-relative">
+                                                                <img
+                                                                    src={URL.createObjectURL(image)}
+                                                                    alt={`Image ${index}`}
+                                                                    className="img-fluid"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <FontAwesomeIcon icon={faRectangleXmark}
+                                                                    onClick={() => handleRemoveImage(index)}
+                                                                    style={{ width: "100%" }} />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-                            <button className='showAll_cakeid' >
-                                <a href='#'>xem thêm</a>
-                            </button>
-                        </div>
-                    ))}
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" className="btn btn-primary">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div className='right col-2'></div>
             </div>
-            <Footer />
-            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
         </>
     );
 }
