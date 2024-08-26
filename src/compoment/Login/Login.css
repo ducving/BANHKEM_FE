@@ -1,6 +1,6 @@
 .login-sidebar {
     background-color: #f8f9fa;
-    height: 350px;
+    height: 600px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,7 +12,22 @@
     background-size: cover;
     position: relative;
     overflow: hidden;
+    background-size: cover; /* Scale the image to cover the entire element */
+    background-repeat: no-repeat;
+    z-index: 0;
 }
+
+
+.login-sidebar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Increase the opacity to make the image darker */
+    z-index: -1;
+  }
 
 .login-sidebar h2 {
     font-weight: bolder;
@@ -20,6 +35,7 @@
     background-size: cover;
     font-Family: '"Dancing Script", cursive';
     background-position: center;
+    margin-top: 10%;
 }
 
 .login-all {

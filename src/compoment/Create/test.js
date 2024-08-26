@@ -1,135 +1,236 @@
+import { faCartShopping, faBars, faRectangleXmark } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import "../Create/test.css";
+import "../Reponsive/Reponsive.css";
+import { useFormik } from 'formik';
+import "../Admin/Admin.css";
 
 export default function Test() {
-  const username = sessionStorage.getItem('username');
-  const role = sessionStorage.getItem('role');
-  const id_user = sessionStorage.getItem('user_id');
-  const [menuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate();
-  const [cake, setCake] = useState([]);
-  const [counts, setCounts] = useState({});
-  const [typeIdCake, setTypeIdCake] = useState('');
-  const [image, setImage] = useState([]);
-  const [name, setName] = useState('');
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
-  const handleImageChanges = (event) => {
-    const files = Array.from(event.target.files);
-    setImage([...image, ...files]);
-  };
+    const [imagePreviews, setImagePreviews] = useState([]);
+    const [order, setOrder] = useState([]);
+    const id_user = sessionStorage.getItem('user_id');
+    const [type, setType] = useState([]);
+    const [currentCake, setCurrentCake] = useState(null); // To hold the current cake being edited
 
-  const handleRemoveImage = (index) => {
-    const updatedImages = [...image];
-    updatedImages.splice(index, 1);
-    setImage(updatedImages);
-  };
-
-  const increment = (id) => {
-    setCounts((prevCounts) => ({
-      ...prevCounts,
-      [id]: (prevCounts[id] || 1) + 1
-    }));
-  };
-
-  const decrement = (id) => {
-    setCounts((prevCounts) => ({
-      ...prevCounts,
-      [id]: Math.max((prevCounts[id] || 1) - 1, 1) // Đảm bảo số lượng không giảm dưới 1
-    }));
-  };
-
-  const [isOpen, setIsOpen] = useState(false);
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const [cart, setCart] = useState([]);
-
-  async function getList() {
-    try {
-      const rep = await axios.get(`http://localhost:8080/api/cart/${id_user}`);
-      setCart(rep.data);
-
-      // Khởi tạo số lượng của từng sản phẩm khi nhận dữ liệu từ API
-      const initialCounts = rep.data.reduce((acc, item) => {
-        const key = item.cake.id;
-        if (!acc[key]) {
-          acc[key] = item.quantity || 1; // Sử dụng số lượng từ dữ liệu giỏ hàng hoặc 1 nếu không có
-        } else {
-          acc[key] += item.quantity || 1; // Cộng dồn số lượng nếu có nhiều sản phẩm giống nhau
+    // Fetch cake types when the component mounts
+    async function getType() {
+        try {
+            const rep = await axios.get('http://localhost:8080/api/cake/typeCake');
+            setType(rep.data);
+        } catch (error) {
+            console.error('Error fetching cake types:', error);
         }
-        return acc;
-      }, {});
-      setCounts(initialCounts);
-    } catch (error) {
-      console.error('Error fetching cart data:', error);
     }
-  }
 
-  useEffect(() => {
-    if (id_user) {
-      getList();
-    } else {
-      console.error('User ID is missing');
-    }
-  }, [id_user]);
+    useEffect(() => {
+        getType();
+    }, []);
 
-  // Nhóm sản phẩm giống nhau
-  const groupedCart = cart.reduce((acc, item) => {
-    const key = item.cake.id;
-    if (!acc[key]) {
-      acc[key] = {
-        ...item,
-        quantity: counts[key] || 1 // Sử dụng số lượng từ trạng thái counts hoặc 1 nếu chưa có
-      };
-    }
-    return acc;
-  }, {});
+    useEffect(() => {
+        async function fetchCakes() {
+            try {
+                const response = await axios.get('http://localhost:8080/api/cake');
+                setOrder(response.data);
+            } catch (error) {
+                console.error('Error fetching cake data:', error);
+            }
+        }
+        fetchCakes();
+    }, []);
 
-  const groupedCartArray = Object.values(groupedCart);
+    const formUpdate = useFormik({
+        initialValues: {
+            id: '',
+            code: "",
+            name: "",
+            description: '',
+            price: "",
+            quantity: "",
+            iduser: id_user,
+            typeOfCake: ''
+        },
+        onSubmit: async (values) => {
+            const formData = new FormData();
+            formData.append("id", values.id);
+            formData.append("code", values.code);
+            formData.append("name", values.name);
+            formData.append("description", values.description);
+            formData.append("price", values.price);
+            formData.append("quantity", values.quantity);
+            formData.append("id_user", values.iduser);
+            formData.append("typeOfCake", values.typeOfCake);
 
-  return (
-    <>
-      <form>
-        <table className="cart-table">
-          <thead>
-            <tr className="row-with-border">
-              <th className="table-none col-3"></th>
-              <th className="table-none col-3"><h3>Thông tin chi tiết</h3></th>
-              <th className="table-none col-2"><p>Đơn giá</p></th>
-              <th className="table-none col-2"><p>Số lượng</p></th>
-              <th className="table-none col-2"><p>Tổng giá</p></th>
-            </tr>
-          </thead>
-          <tbody>
-            {groupedCartArray.map((item) => (
-              <tr className="row-with-border" key={item.cake.id}>
-                <td className="table-none1">
-                {/* <img src={process.env.PUBLIC_URL + '/img/' + (item.cake.image[0]?.name || '')} /> */}
-                </td>
-                <td className="table-none"><p>{item.cake.name}</p></td>
-                <td className="table-none"><p>{item.cake.price} VNĐ</p></td>
-                <td className="table-none">
-                  <div className="table-none-accout">
-                    <button type="button" className="cart-buttona" onClick={() => decrement(item.cake.id)}>
-                      -
-                    </button>
-                    <h5>{counts[item.cake.id] || 1}</h5>
-                    <button type="button" className="cart-buttonb" onClick={() => increment(item.cake.id)}>
-                      +
-                    </button>
-                  </div>
-                </td>
-                <td className="table-none"><p>{(counts[item.cake.id] || 1) * item.cake.price} VNĐ</p></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </form>
-    </>
-  );
+            for (let i = 0; i < imagePreviews.length; i++) {
+                formData.append("image", imagePreviews[i]);
+            }
+
+            try {
+                await axios.put(`http://localhost:8080/api/cake/${values.id}`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+                window.location.href = '/admin';
+            } catch (error) {
+                console.error('Error updating cake:', error);
+            }
+        }
+    });
+
+    const handleImageChanges = (event) => {
+        const files = Array.from(event.target.files);
+        setImagePreviews([...imagePreviews, ...files]);
+    };
+
+    const handleRemoveImage = (index) => {
+        const updatedImages = [...imagePreviews];
+        updatedImages.splice(index, 1);
+        setImagePreviews(updatedImages);
+    };
+
+    const handleEditClick = (cake) => {
+        setCurrentCake(cake);
+        formUpdate.setValues({
+            id: cake.id,
+            code: cake.code,
+            name: cake.name,
+            description: cake.description,
+            price: cake.price,
+            quantity: cake.quantity,
+            iduser: id_user,
+            typeOfCake: cake.typeOfCake?.id || '',
+        });
+        setImagePreviews([]); // Reset image previews when editing a new cake
+    };
+
+    return (
+        <>
+            <table className="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Hình ảnh</th>
+                        <th scope="col">Tên bánh </th>
+                        <th scope="col">Số lượng</th>
+                        <th scope="col">Giá</th>
+                        <th scope="col">Chức năng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {order.map((cake, index) => (
+                        <tr key={index}>
+                            <th scope="row">{index + 1}</th>
+                            <td className='td_img'>
+                                <img className='admin_img' src={process.env.PUBLIC_URL + '/img/' + (cake.image[0]?.name || '')} alt={cake.name} />
+                            </td>
+                            <td>{cake.name}</td>
+                            <td>{cake.quantity}</td>
+                            <td>{cake.price} VNĐ</td>
+                            <td>
+                                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onClick={() => handleEditClick(cake)}>
+                                    Sửa
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            <div className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="staticBackdropLabel">Sửa sản phẩm</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form onSubmit={formUpdate.handleSubmit}>
+                            <div className="modal-body">
+                                <div className='admin_add'>
+                                    <div className='add_name'>
+                                        <label htmlFor="inputName" className="form-label">Tên bánh:</label>
+                                        <input type="text" className="form-control" name="name" id="name" value={formUpdate.values.name} onChange={formUpdate.handleChange} />
+                                    </div>
+                                    <div className='add_code'>
+                                        <label htmlFor="inputCode" className="form-label">Mã bánh:</label>
+                                        <input type="text" className="form-control" name="code" id="code" value={formUpdate.values.code} onChange={formUpdate.handleChange} />
+                                    </div>
+                                    <div className='add_price'>
+                                        <label htmlFor="inputPrice" className="form-label">Giá:</label>
+                                        <div className="input-group">
+                                            <input type="text" className="form-control" aria-label="Dollar amount (with dot and two decimal places)" name='price' value={formUpdate.values.price} onChange={formUpdate.handleChange} />
+                                            <span className="input-group-text">VNĐ</span>
+                                        </div>
+                                    </div>
+                                    <div className='add_quantity'>
+                                        <label htmlFor="inputCode" className="form-label">Số lượng:</label>
+                                        <input type="text" className="form-control" name="quantity" id="quantity" value={formUpdate.values.quantity} onChange={formUpdate.handleChange} />
+                                    </div>
+                                    <div className='add_description'>
+                                        <div className="form-floating">
+                                            <textarea className="form-control" placeholder="Leave a comment here" name="description" id="description" value={formUpdate.values.description} onChange={formUpdate.handleChange} style={{ height: "150px" }}></textarea>
+                                            <label htmlFor="floatingTextarea2">Mô tả</label>
+                                        </div>
+                                    </div>
+                                    <div className='add_lb'>
+                                        <select
+                                            id="typeOfCake"
+                                            name="typeOfCake"
+                                            className="form-control"
+                                            value={formUpdate.values.typeOfCake}
+                                            onChange={formUpdate.handleChange}>
+                                            {type.map((item) => (
+                                                <option key={item.id} value={item.id}>
+                                                    {item.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="col-4" style={{ width: "32%", marginLeft: "1%", marginTop: "3%" }}>
+                                        <div className="col-md" style={{ marginLeft: "1%" }}>
+                                            <div className="file-upload-wrapper">
+                                                <input
+                                                    className="file-upload"
+                                                    accept="image/*"
+                                                    name="imagePreviews"
+                                                    onChange={handleImageChanges}
+                                                    type="file"
+                                                    id="formFileMultiple"
+                                                    multiple />
+                                                <label htmlFor="file-upload">Thêm ảnh</label>
+                                            </div>
+                                        </div>
+                                        {imagePreviews.length > 0 && (
+                                            <div>
+                                                <div className="row">
+                                                    {imagePreviews.map((image, index) => (
+                                                        <div key={index} className="imagePreviews">
+                                                            <div className="position-relative">
+                                                                <img
+                                                                    src={URL.createObjectURL(image)}
+                                                                    alt={`Image ${index}`}
+                                                                    className="img-fluid"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <FontAwesomeIcon icon={faRectangleXmark}
+                                                                    onClick={() => handleRemoveImage(index)}
+                                                                    style={{ width: "100%" }} />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" className="btn btn-primary">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
 }

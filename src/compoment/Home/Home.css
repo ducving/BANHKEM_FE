@@ -1,79 +1,103 @@
 /* BirthcakeSection.css */
 .birthdayCake-title {
-  color: #c0c906; /* Keep the orange color */
-  font-size: 32px; /* Increase the font size to 32 pixels */
-  font-weight: bold; /* Make the text bold */
-  margin-bottom: 0; /* Add some spacing below the title */
+  color: #c0c906;
+  /* Keep the orange color */
+  font-size: 50px;
+  /* Increase the font size to 32 pixels */
+  font-weight: bold;
+  /* Make the text bold */
+  margin-bottom: 0;
+  /* Add some spacing below the title */
+  text-align: center;
+  text-transform: uppercase;
+  margin-top: 2%;
+}
+
+.between1 img {
   text-align: center;
 }
-.between1 img{
-text-align: center;
+
+.navbar {
+  background-color: #3d1a1a;
+  position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
 }
-.navbar{
-  background-color: rgba(74, 29, 34, 0.9);
-}
+
 /* Dropdown.css */
 
- /* chỉnh div tự động xuống dòng*/
-.a{
-padding: 10px;
-border-radius:5% ;
+/* chỉnh div tự động xuống dòng*/
+
+.a {
+  padding: 10px;
+  border-radius: 5%;
 }
-.between2{
+
+.between2 {
   display: flex;
   flex-wrap: wrap;
   margin-top: 5%;
 }
-.between1{
+
+.between1 {
   margin-top: 3%;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
 }
+
 /* chỉnh ảnh*/
-.image img{
+.image img {
   border-radius: 5% 5% 0 0;
   width: 100%;
-  height: 250px;
 }
+
 .image {
   transform-origin: center;
-  
+
 }
 
 .image:hover {
   animation: bounce 2s ease-in-out;
 }
-
+.sidebar{
+  margin-top: 12%;
+}
 .image {
-  overflow: hidden; /* To hide the part of the image that overflows the container */
+  overflow: hidden;
+  /* To hide the part of the image that overflows the container */
 }
 
 .image img {
-  transition: transform 0.3s ease; /* Smooth transition for the zoom effect */
+  transition: transform 0.3s ease;
 }
 
 .image:hover img {
-  transform: scale(1.1); /* Scale the image up on hover */
+  transform: scale(1.1);
+  /* Scale the image up on hover */
 }
 
 /* chỉnh ảnh*/
 
 
 /* chỉnh all*/
-.all{
+.all {
   background-color: #f8f2e8;
 }
-.nameCake{
+
+.nameCake {
   padding: 1%;
   background-color: #fff;
   width: 100%;
   text-align: center;
 }
-.nameCake h3{
+
+.nameCake h3 {
   font-weight: bolder;
 }
+
 .price {
   display: flex;
   flex-direction: row;
@@ -81,21 +105,21 @@ border-radius:5% ;
   border-radius: 0 0 15px 15px;
 }
 
-.price1{
+.price1 {
   width: 40%;
   background-color: #c0c906;
   border-radius: 0 0 0 15px;
-  position: relative;
-  z-index: 2;
   float: left;
   text-align: center;
 }
-.price1 p{
+
+.price1 p {
   margin-top: 12%;
   font-weight: bold;
-  
+
 }
-.price2{
+
+.price2 {
   width: 20%;
   background-color: #3d1a1a;
   border-radius: 0 5px 5px 0;
@@ -105,12 +129,13 @@ border-radius:5% ;
   justify-content: space-evenly;
   border-top-right-radius: 10px;
 }
+
 .price svg {
   font-size: 1.2rem;
 }
 
-  /* chỉnh all*/
-  /* Footer Styles */
+/* chỉnh all*/
+/* Footer Styles */
 footer {
   background-color: #333;
   color: #fff;
@@ -164,6 +189,7 @@ footer {
   text-align: center;
   font-size: 14px;
 }
+
 /* phân trang*/
 .pagination {
   display: flex;
@@ -213,13 +239,21 @@ footer {
   margin-left: 2%;
 }
 
-.phone img, .branch img, .cart img {
+.phone img,
+.branch img,
+.cart img {
   width: 20%;
   border-radius: 50%;
 }
 
 .cart img {
   width: 20%;
+}
+
+.cart h6 {
+  color: rgb(255, 255, 255);
+  font-size: 20px;
+  margin-top: 5%;
 }
 
 .search {
@@ -230,25 +264,33 @@ footer {
 
 
 .search .fa-magnifying-glass:hover {
-  color: #333; /* Change the icon color on hover */
+  color: #333;
+  /* Change the icon color on hover */
 }
 
 .menu-icon {
   display: none;
   cursor: pointer;
 }
+
 .menu li a {
   display: block;
   padding: 10px;
-  font-weight: bold; /* Make the text bold */
-  font-size: 10px; /* Increase the font size */
-  color: #333; /* Set the text color */
-  text-decoration: none; /* Remove the underline */
-  transition: color 0.3s ease; /* Add a smooth transition for the color */
+  font-weight: bold;
+  /* Make the text bold */
+  font-size: 10px;
+  /* Increase the font size */
+  color: #333;
+  /* Set the text color */
+  text-decoration: none;
+  /* Remove the underline */
+  transition: color 0.3s ease;
+  /* Add a smooth transition for the color */
 }
 
 .menu li a:hover {
-  color: #d2d51f; /* Change the text color on hover */
+  color: #d2d51f;
+  /* Change the text color on hover */
 }
 
 .menu {
@@ -269,47 +311,66 @@ footer {
   text-decoration: none;
   color: #fff;
 }
+
 .search {
   position: relative;
-  margin: 0 auto; /* Căn giữa thanh tìm kiếm */
+  margin: 0 auto;
+  /* Căn giữa thanh tìm kiếm */
 }
 
 .search input[type="search"] {
-  padding: 5px 15px; /* Thêm khoảng đệm trong thanh tìm kiếm */
-  border: 2px solid #ddd; /* Đặt viền cho thanh tìm kiếm */
-  border-radius: 25px; /* Làm tròn các góc của thanh tìm kiếm */
-  font-size: 16px; /* Tăng kích thước chữ */
-  outline: none; /* Loại bỏ viền khi nhấp vào */
-  transition: border-color 0.3s; /* Hiệu ứng chuyển đổi màu viền */
+  padding: 5px 15px;
+  /* Thêm khoảng đệm trong thanh tìm kiếm */
+  border: 2px solid #ddd;
+  /* Đặt viền cho thanh tìm kiếm */
+  border-radius: 25px;
+  /* Làm tròn các góc của thanh tìm kiếm */
+  font-size: 16px;
+  /* Tăng kích thước chữ */
+  outline: none;
+  /* Loại bỏ viền khi nhấp vào */
+  transition: border-color 0.3s;
+  /* Hiệu ứng chuyển đổi màu viền */
   width: 90%;
 }
 
 .search input[type="search"]:focus {
-  border-color: #555; /* Thay đổi màu viền khi tập trung vào thanh tìm kiếm */
+  border-color: #555;
+  /* Thay đổi màu viền khi tập trung vào thanh tìm kiếm */
 }
 
 .search input[type="search"]::placeholder {
-  color: #aaa; /* Đặt màu cho placeholder */
-  font-style: italic; /* Đặt kiểu chữ cho placeholder */
+  color: #aaa;
+  /* Đặt màu cho placeholder */
+  font-style: italic;
+  /* Đặt kiểu chữ cho placeholder */
 }
 
-.phone h6, .branch h6, .cart h6, .user h6{
+.phone h6,
+.branch h6,
+.user h6 {
   margin-top: 5%;
   color: #fff;
 }
-.phone a, .branch a, .cart a, .user a{
+
+.phone a,
+.branch a,
+.cart a,
+.user a {
   width: 20%;
   color: #dc4c4c;
   text-decoration: none;
-  
+
 }
+
 .select {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: none; /* Bỏ dấu tam giác mũi tên */
+  background-image: none;
+  /* Bỏ dấu tam giác mũi tên */
   padding: 0.5rem;
-  border: 1px solid  #ddd0;
+  border: 1px solid #ddd0;
   border-radius: 0.25rem;
   font-size: 1rem;
   font-family: inherit;
@@ -367,6 +428,7 @@ footer {
 .cakecook .dropdown-menu li a:hover {
   background-color: #e6e6e6;
 }
+
 /* Styles for the cakecook li */
 .Banhsn {
   position: relative;
@@ -410,3 +472,49 @@ footer {
 .Banhsn .dropdown-menu li a:hover {
   background-color: #e6e6e6;
 }
+
+.btas {
+  border: none;
+  color: #ffffff;
+  background-color: #3d1a1a;
+  margin-left: 20%;
+  font-size: 10px;
+}
+.small-icon{
+  font-size: 10px;
+}
+
+
+.showAll_cakeid {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+}
+
+.showAll_cakeid {
+  background-color: #3d1a1a;
+  color: #fff;
+  margin-left: 45%;
+  margin-top: 4%;
+}
+
+.showAll_cakeid:hover {
+  background-color: #b2bd18;
+  display: inline;
+
+}
+
+.showAll_cakeid a {
+  font-size: 20px;
+  color: white;
+  text-decoration: none;
+}
+

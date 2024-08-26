@@ -14,7 +14,29 @@ export default function View() {
     const [count, setCount] = useState(0);
     const [typeIdCake, setTypeIdCake] = useState('');
     const [name, setName] = useState('');
+    const [totalQuantity, setTotalQuantity] = useState(0);
+    const id_user = sessionStorage.getItem('user_id');
+    const [cartCakeIds, setCartCakeIds] = useState([]); // Track cake IDs in the cart
 
+    const [visibleCount, setVisibleCount] = useState(4); 
+
+    useEffect(() => {
+        async function fetchCart() {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/cart/${id_user}`);
+                const cartItems = response.data;
+                const uniqueItemsCount = cartItems.length; // Count the number of unique cake items
+                setTotalQuantity(uniqueItemsCount);
+                setCartCakeIds(cartItems.map(item => item.id_cake)); // Store the cake IDs in the cart
+            } catch (error) {
+                console.error('Error fetching cart data:', error);
+            }
+        }
+    
+        if (id_user) {
+            fetchCart();
+        }
+    }, [id_user]);
     async function getCake() {
         const res = await axios.get(`http://localhost:8080/api/cake/${params.id}`);
         setCake(res.data);
@@ -63,9 +85,14 @@ export default function View() {
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
     };
+
+    const handleLoadMore = () => {
+        setVisibleCount(prevCount => prevCount + 8); // Increase visible count by 8
+    };
+
     return (
         <>
-            <div className="navbar">
+            <div className="navbar" style={{position:"fixed"}}>
                 <div className="menu1 col-12" style={{ display: "flex" }}>
                     <div className="logo col-2">
                         <img src="https://theme.hstatic.net/1000313040/1000406925/14/logo.png?v=2115" />
@@ -88,7 +115,7 @@ export default function View() {
                         <h6 style={{ width: "50%", textAlign: 'center' }}> Chi nhánh</h6>
                     </div>
                     <div className="user col-2" style={{ display: 'flex' }}>
-                        <a href='/cart' >
+                        <a href='/' >
                             <img src='https://static.vecteezy.com/system/resources/thumbnails/007/033/146/small_2x/profile-icon-login-head-icon-vector.jpg'
                                 style={{ width: "100%", borderRadius: "50%" }} />
 
@@ -96,11 +123,11 @@ export default function View() {
                         <h6 style={{ width: "50%", textAlign: 'center' }}> Tài khoản</h6>
                     </div>
                     <div className="cart col-2" style={{ display: 'flex' }}>
-                        <a href='/test'>
+                        <a href='/cart'>
                             <img src='https://media.istockphoto.com/id/639201388/vector/shopping-cart-icon.jpg?s=612x612&w=is&k=20&c=OABCYZ7OniUdLrgJZuSgq2zuTNClyGGJPM_o5u9ZJnA='
                                 style={{ width: "100%", borderRadius: "50%" }} />
                         </a>
-                        <h6 style={{ width: "20%", textAlign: 'center' }}> 0</h6>
+                        <h6 style={{ width: "20%", textAlign: 'center' }}>{totalQuantity}</h6>
                     </div>
                     <div className="menu-icon" onClick={toggleMenu}>
                         <FontAwesomeIcon icon={faBars} />
@@ -109,16 +136,19 @@ export default function View() {
                 <div className={`menu  ${menuOpen ? 'open' : ''}`} style={{ width: "100%" }}>
                     <ul style={{ display: "flex", width: "100%" }}>
                         <li className='' style={{ width: "13%" }}></li>
-                        <li className='home '><a href='/'> TRANG CHỦ</a></li>
+                        <li className='home '>
+                            <a href='/home'> TRANG CHỦ</a>
+                        </li>
                         <li className='Banhsn '>
                             <a href="#" onClick={toggleDropdown}>
-                                COOKIES & MINICAKE
+                                BÁNH SINH NHẬT
                             </a>
                             {isOpen && (
                                 <ul className="dropdown-menu">
-                                    <li><a href="#">Link 1</a></li>
-                                    <li><a href="#">Link 2</a></li>
-                                    <li><a href="#">Link 3</a></li>
+                                    <li><a href="#">Bánh sinh nhật</a></li>
+                                    <li><a href="#">BÁNH GATEAUX KEM TƯƠI</a></li>
+                                    <li><a href="#">BÁNH MOUSSE</a></li>
+
                                 </ul>
                             )}
                         </li>
@@ -214,7 +244,7 @@ export default function View() {
                             <h5>SẢN PHẨM CÙNG LOẠI</h5>
                         </div>
                         <div className='between2'>
-                            {currentPageData.map(item => (
+                            {currentPageData.slice(0,visibleCount).map(item => (
                                 <div className='a col-3' key={item.id}>
                                     <a href={`/views/${item.id}`}>
                                         <div className='image' >
