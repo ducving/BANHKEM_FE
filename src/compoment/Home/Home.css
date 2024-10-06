@@ -20,9 +20,9 @@
 .navbar {
   background-color: #3d1a1a;
   position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
 }
 
 /* Dropdown.css */
@@ -62,9 +62,11 @@
 .image:hover {
   animation: bounce 2s ease-in-out;
 }
-.sidebar{
+
+.sidebar {
   margin-top: 12%;
 }
+
 .image {
   overflow: hidden;
   /* To hide the part of the image that overflows the container */
@@ -480,7 +482,8 @@ footer {
   margin-left: 20%;
   font-size: 10px;
 }
-.small-icon{
+
+.small-icon {
   font-size: 10px;
 }
 
@@ -518,3 +521,98 @@ footer {
   text-decoration: none;
 }
 
+.home-order {
+  height: 500px;
+
+}
+.home-oder-all{
+  width: 40%;
+  margin-left: 20%;
+}
+.home-order-input {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: 0 auto; /* Center the form */
+}
+
+.home-order-input label {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+.home-order-input input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.home-order-input input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.home-order-input input::placeholder {
+  font-style: italic;
+  color: #aaa;
+}
+.home-oder {
+  background-image: url('https://theme.hstatic.net/1000313040/1000406925/14/banform.jpg?v=2133');
+  background-size: cover; /* Ensures the image covers the div */
+  color: white; /* Adjust text color for visibility */
+}
+
+.home-oder-all {
+  background-color: rgba(0, 0, 0, 0.6); /* Adds a slight overlay for readability */
+  border-radius: 8px;
+  padding: 4%;
+  
+}
+
+.home-order-input input {
+  background-color: rgba(255, 255, 255, 0.8); /* Light background for inputs */
+}
+.home-name h3{
+  color: #c0c906;
+}
+.home-order-input label{
+  color: white;
+}
+.home-name{
+  text-align: center;
+}
+.cah{
+  background-color: #f8f2e8;
+  height: 50px;
+}
+
+/**/
+.news11{
+  text-align: center;
+}
+.cah1{
+  background-color: #f8f2e8;
+  height: 100px;
+}
+.news-oder{
+  background-color:#f8f2e8 ;
+}
+
+.new12-oder{
+  display: flex;
+  width: 80%;
+  margin-left:10% ;
+  margin-top: 5%;
+}
+.new121-oder{
+  width: 40%;
+
+}
+.new122-oder{
+  width: 40%;
+  margin-left: 10%;
+}

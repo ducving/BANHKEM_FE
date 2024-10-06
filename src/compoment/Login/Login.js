@@ -172,7 +172,7 @@ export default function Login() {
                             <div className="account-info">
                                 <p>Xin chào, {sessionStorage.getItem('username')}</p>
                                 <button className="loguot_btn btn-primary" onClick={logout}>Đăng xuất</button><br /><br />
-                                <a href="/user">Lịch sử đặt bánh</a>
+                                <a href="/user">Lịch sử đặt bánh</a><br/> <br/>
                                 {sessionStorage.getItem('role') === 'admin' && (
                                     <a href="/admin">Danh sách sản phẩm</a>
                                 )}

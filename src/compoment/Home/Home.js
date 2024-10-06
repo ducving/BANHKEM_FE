@@ -19,12 +19,12 @@ export default function Home() {
     const [image, setImage] = useState([]);
     const [selectedCakeId, setSelectedCakeId] = useState('');
     const [totalQuantity, setTotalQuantity] = useState(0);
-    const [visibleCount, setVisibleCount] = useState(8); 
+    const [visibleCount, setVisibleCount] = useState(8);
 
 
     const navigate = useNavigate();
     const [cartCakeIds, setCartCakeIds] = useState([]); // Track cake IDs in the cart
-    
+
 
 
 
@@ -44,13 +44,14 @@ export default function Home() {
 
 
     }
+
     function formatPrice(price) {
         return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
     useEffect(() => {
         getList()
     }, [name, typeIdCake]);
-    
+
 
 
     useEffect(() => {
@@ -65,12 +66,12 @@ export default function Home() {
                 console.error('Error fetching cart data:', error);
             }
         }
-    
+
         if (id_user) {
             fetchCart();
         }
     }, [id_user]);
-    
+
 
     const formAdd = useFormik({
         initialValues: {
@@ -104,7 +105,7 @@ export default function Home() {
         formAdd.handleSubmit(event);
     };
 
- 
+
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
     };
@@ -120,9 +121,22 @@ export default function Home() {
         return groups;
     }, {});
 
+    const cakeTypeIds = {
+        'Bánh sinh nhật': '1', // Replace '1' with the actual ID for 'Bánh sinh nhật'
+        'Bánh Gâteaux kem tươi': '2', // Replace '2' with the actual ID for 'Bánh Gâteaux kem tươi'
+        'Bánh Mousse': '3', // Replace '3' with the actual ID for 'Bánh Mousse'
+    };
+    
+    const handleDropdownSelect = (cakeTypeName) => {
+        const id = cakeTypeIds[cakeTypeName]; // Get the corresponding idtypecake
+        setTypeIdCake(id); // Set the typeIdCake state with the idtypecake
+    };
+    
+
+
     return (
         <>
-            <div className="navbar" style={{position:"fixed"}}>
+            <div className="navbar" style={{ position: "fixed" }}>
                 <div className="menu1 col-12" style={{ display: "flex" }}>
                     <div className="logo col-2">
                         <img src="https://theme.hstatic.net/1000313040/1000406925/14/logo.png?v=2115" />
@@ -174,12 +188,11 @@ export default function Home() {
                                 BÁNH SINH NHẬT
                             </a>
                             {isOpen && (
-                                <ul className="dropdown-menu">
-                                    <li><a href="#">Bánh sinh nhật</a></li>
-                                    <li><a href="#">BÁNH GATEAUX KEM TƯƠI</a></li>
-                                    <li><a href="#">BÁNH MOUSSE</a></li>
-
-                                </ul>
+                 <ul className="dropdown-menu">
+                 <li><a href="#" onClick={() => handleDropdownSelect('Bánh sinh nhật')}>Bánh sinh nhật</a></li>
+                 <li><a href="#" onClick={() => handleDropdownSelect('Bánh Gâteaux kem tươi')}>BÁNH GATEAUX KEM TƯƠI</a></li>
+                 <li><a href="#" onClick={() => handleDropdownSelect('Bánh Mousse')}>BÁNH MOUSSE</a></li>
+             </ul>
                             )}
                         </li>
                         <li className="cakecook">
@@ -258,12 +271,12 @@ export default function Home() {
                                                 <form onSubmit={(event) => handleSubmit(event, item.id)}>
                                                     <input type='hidden' name='id_cake' value={item.id} onChange={formAdd.handleChange} />
                                                     <button type='submit' className='btas'>
-                                                        <FontAwesomeIcon  className="small-icon" icon={faCartShopping} />
+                                                        <FontAwesomeIcon className="small-icon" icon={faCartShopping} />
                                                     </button>
                                                 </form>
                                             </div>
                                         </div>
-                                       
+
                                     </div>
                                 ))}
                             </div>
@@ -276,7 +289,70 @@ export default function Home() {
 
                 <div className='right col-2'></div>
             </div>
-           
+            <div className='cah'>
+
+            </div>
+            <div className='home-oder'>
+            </div>
+            <div className='home-oder'>
+                <div className='home-oder-all'>
+                    <div className='home-name'>
+                        <h3><b>ĐẶT ONLINE NGAY</b></h3>
+                        <h4>KHÔNG CÒN PHẢI ĐỢI CHỜ GÌ NỮA</h4>
+                    </div>
+                    <div className="home-order-input">
+                        <label for="name">Họ tên của bạn</label>
+                        <input type="text" id="name" />
+
+                        <label for="email">Địa chỉ email của bạn</label>
+                        <input type="email" id="email" />
+
+                        <label for="phone">Số điện thoại của bạn</label>
+                        <input type="tel" id="phone" />
+
+                        <label for="message">Nội dung</label>
+                        <input type="text" id="message" placeholder="Nội dung" />
+                    </div>
+                </div>
+            </div>
+            <div className='cah1'>
+            </div>
+            <div className='news-oder'>
+                <div className='news1'>
+                    <div className='news11'>
+                        <h1 style={{ color: "#c0c906", fontWeight: "bold", fontFamily: "Arial, sans-serif" }}>VỀ CHÚNG TÔI</h1>
+                        <h5 style={{ color: "#3d1a1a", fontWeight: "bold", fontFamily: "Arial, sans-serif" }}>CHÀO MỪNG BẠN ĐẾN VỚI CỬA HÀNG BÁNH ANH HOA</h5>
+
+                    </div>
+                    <div className='new12-oder'>
+                        <div className='new121-oder'>
+                            <img src='https://theme.hstatic.net/1000313040/1000406925/14/intro.png?v=2133' />
+                        </div>
+                        <div className='new122-oder'>
+                            <p>
+                                Anh Hòa Bakery là thương hiệu bánh ngọt Pháp của công ty cổ phần bánh ngọt Anh Hòa.
+                                Được thành lập từ năm 2004 tại con phố Ngõ Trạm, quận Hoàn Kiếm, Hà Nội.
+                                Trải qua hơn 15 năm phát triển, đến nay Anh Hòa Bakery đã có 13 cơ sở kinh doanh
+                                đặt trên những tuyến phố đông dân cư ở Hà Nội. Các sản phẩm Anh Hòa Bakery được làm
+                                từ các nguyên liệu nhập khẩu của các nước có truyền thống làm bánh như: Newzeland, Mỹ,
+                                Pháp, Bỉ. Với hương vị thơm ngon đặc trưng của các loại kem, bơ, sữa, phô mai, hạt hạnh
+                                nhân, chocolate... dưới bàn tay khéo léo của những người thợ làm bánh giàu kinh nghiệm.
+                                Quy mô xưởng sản xuất rộng hơn 2000m2 với các thiết bị tiên tiến hiện đại theo tiêu chuẩn ISO 2018,
+                                toàn bộ nhà máy được sơn phủ bởi sơn EPOXY đặc biệt. Anh Hòa Bakery luôn mang đến cho khách hàng những
+                                sản phẩm chất lượng nhất, đảm bảo tuyệt đối về an toàn vệ sinh thực phẩm.
+                            </p>
+                            <button className='showAll_cakeid' >
+                                <a href='#'>Đọc thêm</a>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div className='cah1'>
+            </div>
+
+
             <Footer />
 
             <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>

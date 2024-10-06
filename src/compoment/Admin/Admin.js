@@ -6,6 +6,7 @@ import "../Reponsive/Reponsive.css";
 import { useFormik } from 'formik';
 import "../Admin/Admin.css";
 import { useNavigate } from 'react-router-dom';
+import Footer from '../Footer/Footer';
 
 export default function Admin() {
     const [imagePreviews, setImagePreviews] = useState([]);
@@ -522,7 +523,7 @@ export default function Admin() {
                 </div>
                 <div className="admin_right"></div>
             </div>
-            <div className="admin_footer"></div>
+            <Footer></Footer>
         </>
     );
 }

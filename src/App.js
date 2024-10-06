@@ -20,7 +20,6 @@ function App() {
                 <Route path='/user' element={<User/>}></Route>
                 <Route path='/register' element={<Register/>}></Route>
                 <Route path='/admin' element={<Admin/>}></Route>
-                
             </Routes>
         </>
     );
