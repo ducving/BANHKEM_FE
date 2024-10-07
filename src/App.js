@@ -8,6 +8,8 @@ import Login from "./compoment/Login/Login";
 import Register from "./compoment/Register/Register";
 import User from "./compoment/User/User";
 import Admin from "./compoment/Admin/Admin";
+import ViewCake from "./compoment/ViewCake/ViewCake";
+
 function App() {
     return (
         <>
@@ -16,10 +18,11 @@ function App() {
                 <Route path='/home' element={<Home />}></Route>
                 <Route path='/cart' element={<Cart/>}></Route>
                 <Route path='/views/:id' element={<View/>}></Route>
-                <Route path='/test' element={<Test/>}></Route>
-                <Route path='/user' element={<User/>}></Route>
+                <Route path='/test/:id' element={<Test/>}></Route>
+                <Route path='/user' element={<User/>}></Route>i
                 <Route path='/register' element={<Register/>}></Route>
                 <Route path='/admin' element={<Admin/>}></Route>
+                <Route path='/viewCake/:id' element={<ViewCake/>}></Route>
             </Routes>
         </>
     );

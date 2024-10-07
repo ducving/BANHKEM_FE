@@ -31,9 +31,9 @@ export default function Admin() {
             const rep = await axios.get('http://localhost:8080/api/cake/typeCake');
             setType(rep.data)
             const cartItems = rep.data;
-            const uniqueItemsCount = cartItems.length; 
+            const uniqueItemsCount = cartItems.length;
             setTotalQuantity(uniqueItemsCount);
-            setCartCakeIds(cartItems.map(item => item.id_cake)); 
+            setCartCakeIds(cartItems.map(item => item.id_cake));
         } catch (error) {
             console.error('Error fetching cake types:', error);
         }
@@ -48,14 +48,14 @@ export default function Admin() {
             try {
                 const response = await axios.get('http://localhost:8080/api/cake');
                 setOrder(response.data);
-                
+
             } catch (error) {
                 console.error('Error fetching cake data:', error);
             }
         }
         fetchCakes();
     }, []);
-    
+
 
     const formAdd = useFormik({
         initialValues: {
@@ -392,22 +392,25 @@ export default function Admin() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {currentRecords.map((cake, index) => (
-                                    <tr key={index}>
-                                        <th scope="row">{(currentPage - 1) * recordsPerPage + index + 1}</th>
-                                        <td className='td_img'>
-                                            <img className='admin_img' src={process.env.PUBLIC_URL + '/img/' + (cake.image[0]?.name || '')} alt={cake.name} />
-                                        </td>
-                                        <td>{cake.name}</td>
-                                        <td>{cake.quantity}</td>
-                                        <td>{formatPrice(cake.price)} VNĐ</td>
-                                        <td>
-                                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onClick={() => handleEditClick(cake)}>
-                                                Sửa
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {currentRecords
+                                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))  // Sorting by createdAt (newest first)
+                                    .map((cake, index) => (
+                                        <tr key={index}>
+                                            <th scope="row">{(currentPage - 1) * recordsPerPage + index + 1}</th>
+                                            <td className='td_img'>
+                                                <img className='admin_img' src={process.env.PUBLIC_URL + '/img/' + (cake.image[0]?.name || '')} alt={cake.name} />
+                                            </td>
+                                            <td>{cake.name}</td>
+                                            <td>{cake.quantity}</td>
+                                            <td>{formatPrice(cake.price)} VNĐ</td>
+                                            <td>
+                                                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onClick={() => handleEditClick(cake)}>
+                                                    Sửa
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+
                             </tbody>
                         </table>
 

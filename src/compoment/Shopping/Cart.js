@@ -88,7 +88,7 @@ export default function Cart() {
   };
 
   async function getDelete(id) {
-    if (window.confirm("Are you sure you want to delete this item?")) {
+    if (window.confirm("Bạn có muốn xóa bánh này không")) {
       try {
         await axios.delete(`http://localhost:8080/api/cart/${id}`);
         window.location.reload();

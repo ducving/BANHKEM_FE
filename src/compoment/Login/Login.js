@@ -51,7 +51,7 @@ export default function Login() {
             if (rep.data.role === 'user') {
                 navigate('/home');
             } else {
-                navigate('/home');
+                navigate('/admin');
             }
         } catch (error) {
             console.error('Login failed', error);

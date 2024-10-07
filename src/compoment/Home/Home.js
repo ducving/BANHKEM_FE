@@ -115,23 +115,28 @@ export default function Home() {
         setIsOpen(!isOpen);
     };
     const groupedCakes = cake.reduce((groups, item) => {
-        const group = groups[item.typeOfCake.name] || [];
-        group.push(item);
-        groups[item.typeOfCake.name] = group;
+        if (!groups[item.typeOfCake.name]) {
+            groups[item.typeOfCake.name] = {
+                cakes: [],
+                typeId: item.typeOfCake.id // Lưu trữ ID loại bánh
+            };
+        }
+        groups[item.typeOfCake.name].cakes.push(item);
         return groups;
     }, {});
+
 
     const cakeTypeIds = {
         'Bánh sinh nhật': '1', // Replace '1' with the actual ID for 'Bánh sinh nhật'
         'Bánh Gâteaux kem tươi': '2', // Replace '2' with the actual ID for 'Bánh Gâteaux kem tươi'
         'Bánh Mousse': '3', // Replace '3' with the actual ID for 'Bánh Mousse'
     };
-    
+
     const handleDropdownSelect = (cakeTypeName) => {
         const id = cakeTypeIds[cakeTypeName]; // Get the corresponding idtypecake
         setTypeIdCake(id); // Set the typeIdCake state with the idtypecake
     };
-    
+
 
 
     return (
@@ -188,11 +193,11 @@ export default function Home() {
                                 BÁNH SINH NHẬT
                             </a>
                             {isOpen && (
-                 <ul className="dropdown-menu">
-                 <li><a href="#" onClick={() => handleDropdownSelect('Bánh sinh nhật')}>Bánh sinh nhật</a></li>
-                 <li><a href="#" onClick={() => handleDropdownSelect('Bánh Gâteaux kem tươi')}>BÁNH GATEAUX KEM TƯƠI</a></li>
-                 <li><a href="#" onClick={() => handleDropdownSelect('Bánh Mousse')}>BÁNH MOUSSE</a></li>
-             </ul>
+                                <ul className="dropdown-menu">
+                                    <li><a href="#" onClick={() => handleDropdownSelect('Bánh sinh nhật')}>Bánh sinh nhật</a></li>
+                                    <li><a href="#" onClick={() => handleDropdownSelect('Bánh Gâteaux kem tươi')}>BÁNH GATEAUX KEM TƯƠI</a></li>
+                                    <li><a href="#" onClick={() => handleDropdownSelect('Bánh Mousse')}>BÁNH MOUSSE</a></li>
+                                </ul>
                             )}
                         </li>
                         <li className="cakecook">
@@ -252,7 +257,7 @@ export default function Home() {
                                 <img src='https://theme.hstatic.net/1000313040/1000406925/14/home_line_collection1.png?v=2115' />
                             </div>
                             <div className='between2'>
-                                {groupedCakes[typeOfCake].slice(0, visibleCount).map(item => (
+                            {groupedCakes[typeOfCake].cakes.slice(0, visibleCount).map(item => (
                                     <div className='a col-3' key={item.id}>
                                         <a href={`/views/${item.id}`}>
                                             <div className='image' >
@@ -276,12 +281,11 @@ export default function Home() {
                                                 </form>
                                             </div>
                                         </div>
-
                                     </div>
                                 ))}
                             </div>
-                            <button className='showAll_cakeid' >
-                                <a href='#'>xem thêm</a>
+                            <button className='showAll_cakeid'>
+                                <a href={`/viewCake/${groupedCakes[typeOfCake].typeId}`}>Xem thêm</a>
                             </button>
                         </div>
                     ))}
